@@ -59,11 +59,23 @@ npm run format
 - Vue DevTools plugin is enabled for development
 - Prettier is configured to skip formatting conflicts with ESLint
 
+### Question Management
+
+Questions are stored in TSV (tab-separated values) files located in `src/data/questions/`:
+- **File naming**: `{subject_code}_questions_pt{number}.tsv` (e.g., `pni_questions_pt1.tsv`)
+- **Format**: Tab-delimited TSV with headers: `Predmet	Pitanje	Tip_pitanja	Odgovor_A	Odgovor_B	Odgovor_C	Odgovor_D	Tocan_odgovor	Napomena`
+- **Question types**:
+  - `visestruki_izbor` (multiple choice) - correct answer is A/B/C/D
+  - `otvoreno` (open-ended) - correct answer is full text
+- **Loading**: Questions are loaded dynamically using Vite's `import.meta.glob` when quiz view mounts
+- **Subject mapping**: TSV files map to classes via abbreviations (PNI→1, ODS→2, OPS→3, UAFS→4, UMS→5, OMT→6, OMTK→7)
+- See `src/data/questions/README.md` for detailed TSV format documentation
+
 ## Product Specification
 
 ### Core Purpose
 
-A centralized learning hub for UEFA C coaching candidates to bridge the gap between fragmented Google Drive materials and exam preparation via a persistent quiz engine.
+A centralized learning hub for UEFA C coaching candidates to bridge the gap between fragmented Google Drive materials and exam preparation via a persistent quiz engine. The instructions and labels inside of the web app should be displayed in Croatian language, but the rest of the code and implementation should be done in English.
 
 ### Functional Requirements (MVP)
 

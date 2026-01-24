@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useClassesStore } from '@/stores/classes'
+import ClassCard from '@/components/ClassCard.vue'
 
 const userStore = useUserStore()
+const classesStore = useClassesStore()
 const inputName = ref('')
 const isSubmitting = ref(false)
 
@@ -18,25 +21,35 @@ function handleSubmit() {
 <template>
   <div class="home-container">
     <div v-if="!userStore.hasName()" class="welcome-card">
-      <h1>Welcome to UEFA C Course</h1>
-      <p>Please enter your full name to get started</p>
+      <h1>Dobrodošli u UEFA C tečaj</h1>
+      <p>Molimo unesite svoje puno ime za početak</p>
 
       <form @submit.prevent="handleSubmit" class="name-form">
         <input
           v-model="inputName"
           type="text"
-          placeholder="Enter your full name"
+          placeholder="Unesite svoje puno ime"
           required
           class="name-input"
           autofocus
         />
-        <button type="submit" class="submit-button">Continue</button>
+        <button type="submit" class="submit-button">Nastavi</button>
       </form>
     </div>
 
     <div v-else class="dashboard">
-      <h1>Welcome back, {{ userStore.name }}!</h1>
-      <p>Your learning dashboard will appear here.</p>
+      <div class="dashboard-header">
+        <h1>Moji predmeti</h1>
+        <p>Pristupite materijalima i resursima za vaše predmete</p>
+      </div>
+
+      <div class="classes-grid">
+        <ClassCard
+          v-for="classItem in classesStore.classes"
+          :key="classItem.id"
+          :class-data="classItem"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -45,9 +58,9 @@ function handleSubmit() {
 .home-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 80vh;
-  padding: 2rem;
+  padding: 3rem 2rem;
 }
 
 .welcome-card {
@@ -107,15 +120,31 @@ function handleSubmit() {
 }
 
 .dashboard {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
   text-align: center;
+  margin-bottom: 3rem;
 }
 
-.dashboard h1 {
+.dashboard-header h1 {
   color: #2c3e50;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.dashboard p {
+.dashboard-header p {
   color: #606060;
+  font-size: 1.125rem;
+}
+
+.classes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
 }
 </style>
