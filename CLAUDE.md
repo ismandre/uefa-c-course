@@ -36,6 +36,8 @@ npm run format
 - **Build Tool**: Vite 7.x
 - **State Management**: Pinia (using the setup store pattern)
 - **Routing**: Vue Router 4 (using `createWebHistory`)
+- **Backend/Database**: Firebase Firestore (for analytics and data storage)
+- **Authentication**: Firebase Authentication (for admin access)
 - **Code Quality**: ESLint 9.x (flat config) + Prettier
 
 ### Project Structure
@@ -70,6 +72,37 @@ Questions are stored in TSV (tab-separated values) files located in `src/data/qu
 - **Loading**: Questions are loaded dynamically using Vite's `import.meta.glob` when quiz view mounts
 - **Subject mapping**: TSV files map to classes via abbreviations (PNI→1, ODS→2, OPS→3, UAFS→4, UMS→5, OMT→6, OMTK→7)
 - See `src/data/questions/README.md` for detailed TSV format documentation
+
+### Firebase & Analytics
+
+The application uses Firebase for centralized analytics tracking:
+
+#### Setup Required
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable **Firestore Database** and **Firebase Authentication** (Email/Password)
+3. Create a `.env` file from `.env.example` with your Firebase credentials
+4. Create an admin user in Firebase Authentication
+5. See `FIREBASE_SETUP.md` for detailed step-by-step instructions
+
+#### Analytics Events Tracked
+- `user_onboarded` - When users sign up with name and group
+- `material_clicked` - When users click on presentations, notes, or videos
+- `quiz_started` - When users start a quiz session
+- `question_answered` - Each question attempt with correctness and attempt number
+- `quiz_completed` - When users finish a quiz with performance metrics
+- `page_view` - Page navigation (excluding admin pages)
+
+#### Admin Access
+- **Login**: Navigate to `/admin/login`
+- **Dashboard**: `/admin/analytics` (requires authentication)
+- **Features**: View real-time statistics, export data as JSON, refresh data
+- **Security**: Route guards prevent unauthorized access
+
+#### Data Storage
+- **Collection**: `analytics-events` in Firestore
+- **Security Rules**: Allow public writes (for analytics), restrict reads to authenticated admins
+- **Local Storage**: User data (name, group) and question history stored in localStorage
+- **Export**: Admin can export all analytics data as JSON for analysis
 
 ## Product Specification
 

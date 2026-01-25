@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQuestionsStore } from '@/stores/questions'
 import { useClassesStore } from '@/stores/classes'
 import { useHistoryStore } from '@/stores/history'
+import { useAnalyticsStore } from '@/stores/analytics'
 import QuestionHistory from '@/components/QuestionHistory.vue'
 
 const route = useRoute()
@@ -11,6 +12,7 @@ const router = useRouter()
 const questionsStore = useQuestionsStore()
 const classesStore = useClassesStore()
 const historyStore = useHistoryStore()
+const analyticsStore = useAnalyticsStore()
 
 const classId = parseInt(route.params.id)
 const currentClass = computed(() => classesStore.getClassById(classId))
@@ -20,6 +22,11 @@ const selectedAnswer = ref(null)
 const userAnswer = ref('')
 const showAnswer = ref(false)
 const isCorrect = ref(null)
+
+// Analytics tracking
+const quizStartTime = ref(null)
+const correctAnswersCount = ref(0)
+const answeredQuestions = ref(new Set())
 
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value])
 const isLastQuestion = computed(() => currentQuestionIndex.value === questions.value.length - 1)
@@ -58,6 +65,10 @@ onMounted(async () => {
   if (questions.value.length === 0) {
     // No questions available for this class
     console.warn('No questions available for class', classId)
+  } else {
+    // Track quiz start
+    quizStartTime.value = Date.now()
+    analyticsStore.trackQuizStarted(classId, currentClass.value?.name || '', questions.value.length)
   }
 })
 
@@ -70,8 +81,25 @@ function selectOption(index) {
 function checkAnswer() {
   if (isMultipleChoice.value) {
     isCorrect.value = selectedAnswer.value === correctAnswerIndex.value
+
     // Record the attempt
     historyStore.addAttempt(currentQuestion.value.id, isCorrect.value)
+
+    // Track analytics
+    const questionHistory = historyStore.getQuestionHistory(currentQuestion.value.id)
+    analyticsStore.trackQuestionAnswered(
+      currentQuestion.value.id,
+      classId,
+      currentQuestion.value.tip_pitanja,
+      isCorrect.value,
+      questionHistory.length,
+    )
+
+    // Update correct answers count
+    if (isCorrect.value && !answeredQuestions.value.has(currentQuestion.value.id)) {
+      correctAnswersCount.value++
+      answeredQuestions.value.add(currentQuestion.value.id)
+    }
   }
   showAnswer.value = true
 }
@@ -82,14 +110,47 @@ function toggleAnswer() {
 
 function markAsCorrect() {
   isCorrect.value = true
+
   // Record the attempt
   historyStore.addAttempt(currentQuestion.value.id, true)
+
+  // Track analytics
+  const questionHistory = historyStore.getQuestionHistory(currentQuestion.value.id)
+  analyticsStore.trackQuestionAnswered(
+    currentQuestion.value.id,
+    classId,
+    currentQuestion.value.tip_pitanja,
+    true,
+    questionHistory.length,
+  )
+
+  // Update correct answers count
+  if (!answeredQuestions.value.has(currentQuestion.value.id)) {
+    correctAnswersCount.value++
+    answeredQuestions.value.add(currentQuestion.value.id)
+  }
 }
 
 function markAsIncorrect() {
   isCorrect.value = false
+
   // Record the attempt
   historyStore.addAttempt(currentQuestion.value.id, false)
+
+  // Track analytics
+  const questionHistory = historyStore.getQuestionHistory(currentQuestion.value.id)
+  analyticsStore.trackQuestionAnswered(
+    currentQuestion.value.id,
+    classId,
+    currentQuestion.value.tip_pitanja,
+    false,
+    questionHistory.length,
+  )
+
+  // Mark question as answered
+  if (!answeredQuestions.value.has(currentQuestion.value.id)) {
+    answeredQuestions.value.add(currentQuestion.value.id)
+  }
 }
 
 function nextQuestion() {
@@ -113,7 +174,24 @@ function resetQuestion() {
   isCorrect.value = null
 }
 
+function completeQuiz() {
+  if (quizStartTime.value) {
+    const duration = Date.now() - quizStartTime.value
+    analyticsStore.trackQuizCompleted(
+      classId,
+      currentClass.value?.name || '',
+      correctAnswersCount.value,
+      questions.value.length,
+      duration,
+    )
+  }
+}
+
 function goBackToHome() {
+  // If on last question or have answered questions, mark quiz as completed
+  if (isLastQuestion.value || answeredQuestions.value.size > 0) {
+    completeQuiz()
+  }
   router.push('/')
 }
 </script>

@@ -1,10 +1,23 @@
 <script setup>
-defineProps({
+import { useAnalyticsStore } from '@/stores/analytics'
+
+const props = defineProps({
   classData: {
     type: Object,
     required: true,
   },
 })
+
+const analyticsStore = useAnalyticsStore()
+
+function trackMaterialClick(materialType, materialName) {
+  analyticsStore.trackMaterialClicked(
+    materialType,
+    materialName,
+    props.classData.id,
+    props.classData.name,
+  )
+}
 </script>
 
 <template>
@@ -33,6 +46,7 @@ defineProps({
             target="_blank"
             rel="noopener noreferrer"
             class="material-link"
+            @click="trackMaterialClick('presentation', item.name)"
           >
             {{ item.name }}
           </a>
@@ -53,6 +67,7 @@ defineProps({
             target="_blank"
             rel="noopener noreferrer"
             class="material-link"
+            @click="trackMaterialClick('note', item.name)"
           >
             {{ item.name }}
           </a>
@@ -73,6 +88,7 @@ defineProps({
             target="_blank"
             rel="noopener noreferrer"
             class="material-link"
+            @click="trackMaterialClick('video', item.name)"
           >
             {{ item.name }}
           </a>
@@ -95,7 +111,7 @@ defineProps({
     <div class="card-footer">
       <RouterLink :to="`/quiz/${classData.id}`" class="quiz-button">
         <span class="quiz-icon">📝</span>
-        Zapocni kviz
+        Započni kviz
       </RouterLink>
     </div>
   </div>
