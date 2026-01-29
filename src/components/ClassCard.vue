@@ -1,5 +1,7 @@
 <script setup>
+import { computed } from 'vue'
 import { useAnalyticsStore } from '@/stores/analytics'
+import { getExamForClass } from '@/config/exams'
 
 const props = defineProps({
   classData: {
@@ -9,6 +11,9 @@ const props = defineProps({
 })
 
 const analyticsStore = useAnalyticsStore()
+
+// Get exam information for this class
+const examInfo = computed(() => getExamForClass(props.classData.id))
 
 function trackMaterialClick(materialType, materialName) {
   analyticsStore.trackMaterialClicked(
@@ -24,9 +29,24 @@ function trackMaterialClick(materialType, materialName) {
   <div class="class-card">
     <div class="card-header">
       <h3 class="class-name">{{ classData.name }}</h3>
-      <span class="class-type" :class="classData.type.toLowerCase()">
-        {{ classData.type }}
-      </span>
+      <div class="header-badges">
+        <span class="class-type" :class="classData.type.toLowerCase()">
+          {{ classData.type }}
+        </span>
+        <div v-if="examInfo" class="exam-badge-wrapper">
+          <span
+            class="exam-badge"
+            :style="{ backgroundColor: examInfo.color }"
+            :title="examInfo.fullName"
+          >
+            {{ examInfo.name }}
+          </span>
+          <div class="exam-tooltip">
+            <div class="tooltip-header">{{ examInfo.fullName }}</div>
+            <div class="tooltip-description">{{ examInfo.description }}</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="card-materials">
@@ -151,6 +171,13 @@ function trackMaterialClick(materialType, materialName) {
   flex: 1;
 }
 
+.header-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
 .class-type {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -168,6 +195,67 @@ function trackMaterialClick(materialType, materialName) {
 .class-type.online {
   background-color: #f3e5f5;
   color: #7b1fa2;
+}
+
+.exam-badge-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.exam-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  cursor: help;
+  transition: all 0.2s ease;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exam-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.exam-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  max-width: 280px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.exam-badge-wrapper:hover .exam-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.tooltip-header {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.375rem;
+}
+
+.tooltip-description {
+  font-size: 0.75rem;
+  color: #606060;
+  line-height: 1.4;
 }
 
 .materials-title {

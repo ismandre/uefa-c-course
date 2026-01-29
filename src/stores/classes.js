@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { getExamForClass } from '@/config/exams'
 
 export const useClassesStore = defineStore('classes', () => {
   const classes = ref([
@@ -17,14 +18,14 @@ export const useClassesStore = defineStore('classes', () => {
         ],
         notes: [],
         videos: [
-          {
-            name: '2025-11-25 1. dio',
-            url: 'https://drive.google.com/file/d/1peANGnkRYrdaxHoM4AJN60KGSB8_3Xc3/view?usp=drive_link',
-          },
-          {
-            name: '2025-11-25 2.dio',
-            url: 'https://drive.google.com/file/d/1F7JmkD1WYdHEJ3zy-BaU9VzXvMb_l_EG/view?usp=drive_link',
-          },
+          // {
+          //   name: '2025-11-25 1. dio',
+          //   url: 'https://drive.google.com/file/d/1peANGnkRYrdaxHoM4AJN60KGSB8_3Xc3/view?usp=drive_link',
+          // },
+          // {
+          //   name: '2025-11-25 2.dio',
+          //   url: 'https://drive.google.com/file/d/1F7JmkD1WYdHEJ3zy-BaU9VzXvMb_l_EG/view?usp=drive_link',
+          // },
         ],
       },
     },
@@ -35,21 +36,24 @@ export const useClassesStore = defineStore('classes', () => {
       type: 'Online',
       materials: {
         presentations: [
-          // { name: 'Week 1 - Introduction', url: 'https://drive.google.com/...' },
+          {
+            name: 'Uvod u didaktiku sporta',
+            url: 'https://drive.google.com/file/d/1S-8gBcMx_kKX4l3M9uaL-z6JrwOrivnv/view?usp=sharing',
+          },
         ],
         notes: [
           // { name: 'Lecture Notes', url: 'https://drive.google.com/...' },
         ],
         videos: [
           // { name: 'Session Recording', url: 'https://drive.google.com/...' },
-          {
-            name: '2025-11-07 1. dio',
-            url: 'https://drive.google.com/file/d/1hPPeSxi74Zcnw8EmnMJHRZMc1BKeumKx/view?usp=drive_link',
-          },
-          {
-            name: '2025-11-07 2. dio',
-            url: 'https://drive.google.com/file/d/1BoTGiSfPGYp2O0NXJeQ5DX5v5QomwL-P/view?usp=drive_link',
-          },
+          // {
+          //   name: '2025-11-07 1. dio',
+          //   url: 'https://drive.google.com/file/d/1hPPeSxi74Zcnw8EmnMJHRZMc1BKeumKx/view?usp=drive_link',
+          // },
+          // {
+          //   name: '2025-11-07 2. dio',
+          //   url: 'https://drive.google.com/file/d/1BoTGiSfPGYp2O0NXJeQ5DX5v5QomwL-P/view?usp=drive_link',
+          // },
         ],
       },
     },
@@ -59,13 +63,18 @@ export const useClassesStore = defineStore('classes', () => {
       abbreviation: 'OPS',
       type: 'Online',
       materials: {
-        presentations: [],
+        presentations: [
+          {
+            name: 'Uvod u pedagogiju sporta',
+            url: 'https://drive.google.com/file/d/1k4E3vI55LN4Nu6XJTkH73wslkqc-PuCZ/view?usp=sharing',
+          },
+        ],
         notes: [],
         videos: [
-          {
-            name: '2025-11-27',
-            url: 'https://drive.google.com/file/d/1uPWaNHKC-Ll0ABnBYQiVVq1o_B3x9Dx2/view?usp=drive_link',
-          },
+          // {
+          //   name: '2025-11-27',
+          //   url: 'https://drive.google.com/file/d/1uPWaNHKC-Ll0ABnBYQiVVq1o_B3x9Dx2/view?usp=drive_link',
+          // },
         ],
       },
     },
@@ -83,18 +92,18 @@ export const useClassesStore = defineStore('classes', () => {
         ],
         notes: [],
         videos: [
-          {
-            name: '2025-10-21 1. dio',
-            url: 'https://drive.google.com/file/d/1-P4o690XxY-Cd5JreZzmpWar-8spZoae/view?usp=drive_link',
-          },
-          {
-            name: '2025-10-21 2. dio',
-            url: 'https://drive.google.com/file/d/1StHiM6QZ3PeGOhE5rCHH4JfacgFABjX2/view?usp=drive_link',
-          },
-          {
-            name: '2025-10-21 3. dio',
-            url: 'https://drive.google.com/file/d/1xdn7l5EjtadJPr1HAvEcVm3-YXdGgodw/view?usp=drive_link',
-          },
+          // {
+          //   name: '2025-10-21 1. dio',
+          //   url: 'https://drive.google.com/file/d/1-P4o690XxY-Cd5JreZzmpWar-8spZoae/view?usp=drive_link',
+          // },
+          // {
+          //   name: '2025-10-21 2. dio',
+          //   url: 'https://drive.google.com/file/d/1StHiM6QZ3PeGOhE5rCHH4JfacgFABjX2/view?usp=drive_link',
+          // },
+          // {
+          //   name: '2025-10-21 3. dio',
+          //   url: 'https://drive.google.com/file/d/1xdn7l5EjtadJPr1HAvEcVm3-YXdGgodw/view?usp=drive_link',
+          // },
         ],
       },
     },
@@ -107,10 +116,10 @@ export const useClassesStore = defineStore('classes', () => {
         presentations: [],
         notes: [],
         videos: [
-          {
-            name: '2025-11-28',
-            url: 'https://drive.google.com/file/d/1QP8j2raTLoNSvKTPoHl28zGuB2Y4jbwz/view?usp=drive_link',
-          },
+          // {
+          //   name: '2025-11-28',
+          //   url: 'https://drive.google.com/file/d/1QP8j2raTLoNSvKTPoHl28zGuB2Y4jbwz/view?usp=drive_link',
+          // },
         ],
       },
     },
@@ -142,5 +151,9 @@ export const useClassesStore = defineStore('classes', () => {
     return classes.value.find((c) => c.id === id)
   }
 
-  return { classes, getClassById }
+  function getExamInfo(classId) {
+    return getExamForClass(classId)
+  }
+
+  return { classes, getClassById, getExamInfo }
 })
