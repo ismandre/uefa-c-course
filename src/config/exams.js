@@ -10,7 +10,7 @@ export const exams = {
   SIU2: {
     id: 'SIU2',
     name: 'SIU2',
-    fullName: 'Sportsko-informatička urgencija 2',
+    fullName: 'SIU2',
     description: 'Ispit koji obuhvaća didaktiku i pedagogiju sporta',
     color: '#FF6B6B', // Red
     classIds: [2, 3], // ODS, OPS
@@ -18,10 +18,19 @@ export const exams = {
   SIU3: {
     id: 'SIU3',
     name: 'SIU3',
-    fullName: 'Sportsko-informatička urgencija 3',
-    description: 'Ispit koji obuhvaća anatomiju, fiziologiju i medicinu sporta',
+    fullName: 'SIU3',
+    description: 'Ispit koji obuhvaća uvod u nogomet',
     color: '#4ECDC4', // Teal
-    classIds: [4, 5], // UAFS, UMS
+    classIds: [1], // UAFS, UMS
+  },
+  SIU1: {
+    id: 'SIU1',
+    name: 'SIU1',
+    fullName: 'SIU1',
+    description:
+      'Ispit koji obuhvaća snove anatomije, fiziologije, sportske medicine, osnovnog održavanja života i zaštite na radu',
+    color: '#FACE68',
+    classIds: [4, 5],
   },
   // Add more exam groups as needed
   // EXAMPLE:

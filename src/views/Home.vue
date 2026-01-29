@@ -25,27 +25,30 @@ function handleSubmit() {
 <template>
   <div class="home-container">
     <div v-if="!userStore.hasName()" class="welcome-card">
-      <h1>Dobrodošli u UEFA C tečaj</h1>
-      <p>Molimo unesite svoje puno ime i grupu za početak</p>
+      <h1>Dobrodošli u UEFA C materijale</h1>
+      <p>Molimo unesite svoje ime i grupu za početak</p>
 
       <form @submit.prevent="handleSubmit" class="name-form">
-        <input
-          v-model="inputName"
-          type="text"
-          placeholder="Unesite svoje puno ime"
-          required
-          class="name-input"
-          autofocus
-        />
+        <div class="input-with-tooltip">
+          <input
+            v-model="inputName"
+            type="text"
+            placeholder="Unesite svoje ime"
+            required
+            class="name-input"
+            autofocus
+          />
+          <div class="info-icon-wrapper">
+            <span class="info-icon">ℹ️</span>
+            <div class="info-tooltip">
+              Ne morate unositi puno ime. Možete koristiti nadimak ili skraćeno ime.
+            </div>
+          </div>
+        </div>
 
         <div class="form-group">
           <label for="group-select" class="form-label">Odaberite svoju grupu:</label>
-          <select
-            id="group-select"
-            v-model="selectedGroup"
-            required
-            class="group-select"
-          >
+          <select id="group-select" v-model="selectedGroup" required class="group-select">
             <option value="" disabled>Odaberite grupu</option>
             <option value="Grupa 1">Grupa 1</option>
             <option value="Grupa 2">Grupa 2</option>
@@ -126,6 +129,60 @@ function handleSubmit() {
   color: #2c3e50;
 }
 
+.input-with-tooltip {
+  position: relative;
+  width: 100%;
+}
+
+.info-icon-wrapper {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-block;
+}
+
+.info-icon {
+  font-size: 1.125rem;
+  cursor: help;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  user-select: none;
+}
+
+.info-icon-wrapper:hover .info-icon {
+  opacity: 1;
+}
+
+.info-tooltip {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  max-width: 280px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  font-size: 0.875rem;
+  color: #606060;
+  line-height: 1.4;
+  text-align: left;
+  border: 1px solid #e0e0e0;
+}
+
+.info-icon-wrapper:hover .info-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 .name-input,
 .group-select {
   padding: 0.75rem 1rem;
@@ -134,6 +191,11 @@ function handleSubmit() {
   border-radius: 8px;
   transition: border-color 0.3s;
   font-family: inherit;
+}
+
+.name-input {
+  width: 100%;
+  padding-right: 3rem;
 }
 
 .name-input:focus,
