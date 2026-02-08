@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import Quiz from '@/views/Quiz.vue'
+import QuestionList from '@/views/QuestionList.vue'
 import About from '@/views/About.vue'
 import AdminLogin from '@/views/AdminLogin.vue'
 import AdminAnalytics from '@/views/AdminAnalytics.vue'
@@ -19,6 +20,11 @@ const router = createRouter({
       path: '/quiz/:id',
       name: 'quiz',
       component: Quiz,
+    },
+    {
+      path: '/questions/:classId',
+      name: 'question-list',
+      component: QuestionList,
     },
     {
       path: '/about',
