@@ -7,12 +7,23 @@
  */
 
 export const exams = {
+  SIU1: {
+    id: 'SIU1',
+    name: 'SIU1',
+    fullName: 'SIU1',
+    description:
+      'Ispit koji obuhvaća osnove anatomije, fiziologije, sportske medicine i zaštite na radu i od požara',
+    color: '#FACE68',
+    order: 1,
+    classIds: [4, 5, 6, 7], // UFAF, UMS, ZNR, ZOP
+  },
   SIU2: {
     id: 'SIU2',
     name: 'SIU2',
     fullName: 'SIU2',
     description: 'Ispit koji obuhvaća didaktiku i pedagogiju sporta',
-    color: '#FF6B6B', // Red
+    color: '#FF6B6B',
+    order: 2,
     classIds: [2, 3], // ODS, OPS
   },
   SIU3: {
@@ -20,28 +31,10 @@ export const exams = {
     name: 'SIU3',
     fullName: 'SIU3',
     description: 'Ispit koji obuhvaća uvod u nogomet',
-    color: '#4ECDC4', // Teal
-    classIds: [1], // UAFS, UMS
+    color: '#4ECDC4',
+    order: 3,
+    classIds: [1], // PNI
   },
-  SIU1: {
-    id: 'SIU1',
-    name: 'SIU1',
-    fullName: 'SIU1',
-    description:
-      'Ispit koji obuhvaća snove anatomije, fiziologije, sportske medicine, osnovnog održavanja života i zaštite na radu',
-    color: '#FACE68',
-    classIds: [4, 5],
-  },
-  // Add more exam groups as needed
-  // EXAMPLE:
-  // METODIKA: {
-  //   id: 'METODIKA',
-  //   name: 'Metodika',
-  //   fullName: 'Metodika tehnike i taktike',
-  //   description: 'Ispit koji obuhvaća metodiku tehnike i taktike',
-  //   color: '#95E1D3',
-  //   classIds: [6, 7], // OMT, OMTK
-  // },
 }
 
 /**
@@ -66,4 +59,12 @@ export function getExamForClass(classId) {
 export function getClassesForExam(examId) {
   const exam = exams[examId]
   return exam ? exam.classIds : []
+}
+
+/**
+ * Get all exams sorted by their display order
+ * @returns {Object[]} Array of exam objects in display order
+ */
+export function getOrderedExams() {
+  return Object.values(exams).sort((a, b) => a.order - b.order)
 }

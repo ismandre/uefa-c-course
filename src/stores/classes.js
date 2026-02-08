@@ -8,7 +8,7 @@ export const useClassesStore = defineStore('classes', () => {
       id: 1,
       name: 'Pravila nogometne igre',
       abbreviation: 'PNI',
-      type: 'Online',
+      type: 'Online predavanje',
       materials: {
         presentations: [
           {
@@ -33,7 +33,7 @@ export const useClassesStore = defineStore('classes', () => {
       id: 2,
       name: 'Osnove didaktike sporta',
       abbreviation: 'ODS',
-      type: 'Online',
+      type: 'Online predavanje',
       materials: {
         presentations: [
           {
@@ -61,7 +61,7 @@ export const useClassesStore = defineStore('classes', () => {
       id: 3,
       name: 'Osnove pedagogije sporta',
       abbreviation: 'OPS',
-      type: 'Online',
+      type: 'Online predavanje',
       materials: {
         presentations: [
           {
@@ -81,13 +81,13 @@ export const useClassesStore = defineStore('classes', () => {
     {
       id: 4,
       name: 'Uvod u anatomiju i fiziologiju sporta',
-      abbreviation: 'UAFS',
-      type: 'Online',
+      abbreviation: 'UFAF',
+      type: 'Online predavanje',
       materials: {
         presentations: [
           {
-            name: 'Funkcionalna anatomija i fiziologija',
-            url: 'https://drive.google.com/file/d/1zvV8WXMpJqXxXLNPdLKnNWlpKOQtd1U8/view?usp=drive_link',
+            name: 'Uvod u funkcionalnu anatomiju i fiziologiju',
+            url: 'https://drive.google.com/file/d/19jjvF5lA47KIzmBOBF6QLXg1df6T7DqY/view?usp=sharing',
           },
         ],
         notes: [],
@@ -111,9 +111,14 @@ export const useClassesStore = defineStore('classes', () => {
       id: 5,
       name: 'Uvod u medicinu sporta',
       abbreviation: 'UMS',
-      type: 'Online',
+      type: 'Online predavanje',
       materials: {
-        presentations: [],
+        presentations: [
+          {
+            name: 'Uvod u medicinu sporta - skripta',
+            url: 'https://drive.google.com/file/d/1Q1yfRjelDL4UOzYc-fj7u2N1c15ZVwcr/view?usp=sharing',
+          },
+        ],
         notes: [],
         videos: [
           // {
@@ -125,26 +130,68 @@ export const useClassesStore = defineStore('classes', () => {
     },
     {
       id: 6,
-      name: 'Osnove metodike tehnike',
-      abbreviation: 'OMT',
-      type: 'Live',
+      name: 'Zaštita na radu',
+      abbreviation: 'ZNR',
+      type: 'Online predavanje',
       materials: {
-        presentations: [],
+        presentations: [
+          // {
+          //   name: 'Uvod u medicinu sporta - skripta',
+          //   url: 'https://drive.google.com/file/d/1Q1yfRjelDL4UOzYc-fj7u2N1c15ZVwcr/view?usp=sharing',
+          // },
+        ],
         notes: [],
-        videos: [],
+        videos: [
+          // {
+          //   name: '2025-11-28',
+          //   url: 'https://drive.google.com/file/d/1QP8j2raTLoNSvKTPoHl28zGuB2Y4jbwz/view?usp=drive_link',
+          // },
+        ],
       },
     },
     {
       id: 7,
-      name: 'Osnove metodike taktike',
-      abbreviation: 'OMTK',
-      type: 'Live',
+      name: 'Zaštita od požara',
+      abbreviation: 'ZOP',
+      type: 'Online predavanje',
       materials: {
-        presentations: [],
+        presentations: [
+          // {
+          //   name: 'Uvod u medicinu sporta - skripta',
+          //   url: 'https://drive.google.com/file/d/1Q1yfRjelDL4UOzYc-fj7u2N1c15ZVwcr/view?usp=sharing',
+          // },
+        ],
         notes: [],
-        videos: [],
+        videos: [
+          // {
+          //   name: '2025-11-28',
+          //   url: 'https://drive.google.com/file/d/1QP8j2raTLoNSvKTPoHl28zGuB2Y4jbwz/view?usp=drive_link',
+          // },
+        ],
       },
     },
+    // {
+    //   id: 6,
+    //   name: 'Osnove metodike tehnike',
+    //   abbreviation: 'OMT',
+    //   type: 'Live',
+    //   materials: {
+    //     presentations: [],
+    //     notes: [],
+    //     videos: [],
+    //   },
+    // },
+    // {
+    //   id: 7,
+    //   name: 'Osnove metodike taktike',
+    //   abbreviation: 'OMTK',
+    //   type: 'Live',
+    //   materials: {
+    //     presentations: [],
+    //     notes: [],
+    //     videos: [],
+    //   },
+    // },
   ])
 
   function getClassById(id) {
