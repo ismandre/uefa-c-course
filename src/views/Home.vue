@@ -1,13 +1,28 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useClassesStore } from '@/stores/classes'
 import { useAnalyticsStore } from '@/stores/analytics'
+import { getOrderedExams } from '@/config/exams'
 import ClassCard from '@/components/ClassCard.vue'
 
 const userStore = useUserStore()
 const classesStore = useClassesStore()
 const analyticsStore = useAnalyticsStore()
+
+const examGroups = computed(() =>
+  getOrderedExams().map((exam) => ({
+    exam,
+    classes: exam.classIds.map((id) => classesStore.getClassById(id)).filter(Boolean),
+  })),
+)
+
+const expandedExam = ref(null)
+
+function toggleExam(examId) {
+  expandedExam.value = expandedExam.value === examId ? null : examId
+}
+
 const inputName = ref('')
 const selectedGroup = ref('')
 const isSubmitting = ref(false)
@@ -69,12 +84,33 @@ function handleSubmit() {
         <p>Pristupite materijalima i resursima za vaše predmete</p>
       </div>
 
-      <div class="classes-grid">
-        <ClassCard
-          v-for="classItem in classesStore.classes"
-          :key="classItem.id"
-          :class-data="classItem"
-        />
+      <div class="exam-list">
+        <div v-for="group in examGroups" :key="group.exam.id" class="exam-item">
+          <button
+            class="exam-card"
+            :class="{ expanded: expandedExam === group.exam.id }"
+            :style="{ borderLeftColor: group.exam.color }"
+            @click="toggleExam(group.exam.id)"
+          >
+            <div class="exam-card-info">
+              <h2 class="exam-name">{{ group.exam.name }}</h2>
+              <p class="exam-description">{{ group.exam.description }}</p>
+              <span class="exam-count">
+                {{ group.classes.length }}
+                {{ group.classes.length === 1 ? 'predmet' : 'predmeta' }}
+              </span>
+            </div>
+            <span class="expand-icon">{{ expandedExam === group.exam.id ? '▲' : '▼' }}</span>
+          </button>
+
+          <div v-if="expandedExam === group.exam.id" class="classes-grid">
+            <ClassCard
+              v-for="classItem in group.classes"
+              :key="classItem.id"
+              :class-data="classItem"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -247,10 +283,75 @@ function handleSubmit() {
   font-size: 1.125rem;
 }
 
+.exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.exam-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: white;
+  border: none;
+  border-left: 4px solid;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.exam-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px);
+}
+
+.exam-card.expanded {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.exam-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.exam-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.exam-description {
+  color: #606060;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.exam-count {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.expand-icon {
+  font-size: 0.875rem;
+  color: #999;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
 .classes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-  padding: 0;
+  padding: 1rem 0 0.5rem;
 }
 </style>
