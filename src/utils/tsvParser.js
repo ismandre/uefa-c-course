@@ -1,5 +1,6 @@
 /**
  * Parse TSV content with tab delimiter
+ * Uses header row to dynamically map columns, making it resilient to column additions.
  * @param {string} tsvContent - Raw TSV file content
  * @returns {Array<Object>} Parsed questions array
  */
@@ -8,28 +9,55 @@ export function parseQuestionsTSV(tsvContent) {
 
   if (lines.length === 0) return []
 
-  // First line is the header - skip it
-  // Parse remaining lines as data
+  // Parse header row to get column indices dynamically
+  const headers = lines[0].split('\t').map((h) => h.trim().toLowerCase())
+  const col = (name) => headers.indexOf(name)
+
+  const idxPredmet = col('predmet')
+  const idxPitanje = col('pitanje')
+  const idxTip = col('tip_pitanja')
+  const idxA = col('odgovor_a')
+  const idxB = col('odgovor_b')
+  const idxC = col('odgovor_c')
+  const idxD = col('odgovor_d')
+  const idxE = col('odgovor_e')
+  const idxF = col('odgovor_f')
+  const idxTocan = col('tocan_odgovor')
+  const idxNapomena = col('napomena')
+
+  const parseField = (values, idx) => {
+    if (idx === -1) return ''
+    return values[idx]?.trim().replace(/\\n/g, '\n') || ''
+  }
+
+  // Normalize question type to handle both ASCII and Croatian spelling
+  const normalizeTipPitanja = (value) => {
+    if (!value) return ''
+    const v = value.trim()
+    // Treat "visestruki_izbor" as an alias for "višestruki_izbor"
+    return v === 'visestruki_izbor' ? 'višestruki_izbor' : v
+  }
+
   const questions = []
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i]
     if (!line.trim()) continue
 
-    // Split by tab
     const values = line.split('\t')
 
-    // Create question object
     const question = {
-      predmet: values[0]?.trim() || '',
-      pitanje: values[1]?.trim() || '',
-      tip_pitanja: values[2]?.trim() || '',
-      odgovor_a: values[3]?.trim() || '',
-      odgovor_b: values[4]?.trim() || '',
-      odgovor_c: values[5]?.trim() || '',
-      odgovor_d: values[6]?.trim() || '',
-      tocan_odgovor: values[7]?.trim() || '',
-      napomena: values[8]?.trim() || '',
+      predmet: values[idxPredmet]?.trim() || '',
+      pitanje: parseField(values, idxPitanje),
+      tip_pitanja: normalizeTipPitanja(values[idxTip]),
+      odgovor_a: parseField(values, idxA),
+      odgovor_b: parseField(values, idxB),
+      odgovor_c: parseField(values, idxC),
+      odgovor_d: parseField(values, idxD),
+      odgovor_e: parseField(values, idxE),
+      odgovor_f: parseField(values, idxF),
+      tocan_odgovor: parseField(values, idxTocan),
+      napomena: parseField(values, idxNapomena),
     }
 
     questions.push(question)
@@ -39,24 +67,34 @@ export function parseQuestionsTSV(tsvContent) {
 }
 
 /**
- * Extract subject code and part number from filename
- * @param {string} filename - e.g., "pni_questions_pt1.tsv"
- * @returns {Object} { subjectCode: 'PNI', partNumber: 1 }
+ * Extract subject code from filename.
+ * Supports both formats:
+ *   - {subject_code}_questions_pt{number}.tsv  (e.g., pni_questions_pt1.tsv)
+ *   - {subject_code}_questions.tsv             (e.g., ufaf_questions.tsv)
+ * @param {string} filename - full path or just filename
+ * @returns {Object|null} { subjectCode: 'PNI', partNumber: 1 | null }
  */
 export function parseFilename(filename) {
-  // Extract filename without path
   const name = filename.split('/').pop()
 
-  // Pattern: {{subject_code}}_questions_pt{{number}}.tsv
-  const match = name.match(/^([a-z]+)_questions_pt(\d+)\.tsv$/i)
-
-  if (!match) {
-    console.warn(`Invalid filename format: ${filename}`)
-    return null
+  // Try numbered format first: {code}_questions_pt{N}.tsv
+  const numberedMatch = name.match(/^([a-z]+)_questions_pt(\d+)\.tsv$/i)
+  if (numberedMatch) {
+    return {
+      subjectCode: numberedMatch[1].toUpperCase(),
+      partNumber: parseInt(numberedMatch[2], 10),
+    }
   }
 
-  return {
-    subjectCode: match[1].toUpperCase(),
-    partNumber: parseInt(match[2], 10),
+  // Try unnumbered format: {code}_questions.tsv
+  const simpleMatch = name.match(/^([a-z]+)_questions\.tsv$/i)
+  if (simpleMatch) {
+    return {
+      subjectCode: simpleMatch[1].toUpperCase(),
+      partNumber: null,
+    }
   }
+
+  console.warn(`Invalid filename format: ${filename}`)
+  return null
 }

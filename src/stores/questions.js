@@ -10,14 +10,8 @@ export const useQuestionsStore = defineStore('questions', () => {
     OPS: 3, // Osnove pedagogije sporta
     UAFS: 4, // Uvod u anatomiju i fiziologiju sporta
     UMS: 5, // Uvod u medicinu sporta
-    OMT: 6, // Osnove metodike tehnike
-    OMTK: 7, // Osnove metodike taktike
-    // Alternative abbreviations (if TSV files use different codes)
-    UFAF: 4, // Alternative for UAFS
-    UMKP: 6, // Alternative for OMT
-    UMTA: 7, // Alternative for OMTK
-    UMTE: 6, // Alternative for OMT
-    UMT: 6, // Alternative for OMT
+    ZNR: 6, // Zaštita na radu
+    ZOP: 7, // Zaštita od požara
   }
 
   const questionsByClass = ref({
@@ -42,7 +36,8 @@ export const useQuestionsStore = defineStore('questions', () => {
     try {
       // Import all TSV files from the questions directory
       // Using Vite's import.meta.glob with { query: '?raw' } to get file contents as strings
-      const tsvFiles = import.meta.glob('/src/data/questions/*_questions_pt*.tsv', {
+      // Matches both formats: {code}_questions_pt{N}.tsv and {code}_questions.tsv
+      const tsvFiles = import.meta.glob('/src/data/questions/*_questions*.tsv', {
         query: '?raw',
         import: 'default',
       })
