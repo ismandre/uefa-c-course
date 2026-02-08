@@ -1,78 +1,52 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useClassesStore } from '@/stores/classes'
 import { parseQuestionsTSV, parseFilename } from '@/utils/tsvParser'
 
 export const useQuestionsStore = defineStore('questions', () => {
-  // Map subject abbreviations to class IDs (must match classes.js)
-  const subjectToClassId = {
-    PNI: 1, // Pravila nogometne igre
-    ODS: 2, // Osnove didaktike sporta
-    OPS: 3, // Osnove pedagogije sporta
-    UAFS: 4, // Uvod u anatomiju i fiziologiju sporta
-    UMS: 5, // Uvod u medicinu sporta
-    ZNR: 6, // Zaštita na radu
-    ZOP: 7, // Zaštita od požara
-  }
-
-  const questionsByClass = ref({
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-  })
+  // Questions stored by uppercase subject code (e.g. 'PNI', 'UPS', 'UFAF')
+  // This allows classes to share a question source via class-level config.
+  const questionsBySource = ref({})
 
   let questionsLoaded = false
   let nextQuestionId = 1
 
   /**
-   * Load all TSV files and populate questionsByClass
+   * Load all TSV files and populate questionsBySource.
+   * No subject-to-class mapping needed here — that resolution happens at query time.
    */
   async function loadQuestions() {
     if (questionsLoaded) return
 
     try {
-      // Import all TSV files from the questions directory
-      // Using Vite's import.meta.glob with { query: '?raw' } to get file contents as strings
-      // Matches both formats: {code}_questions_pt{N}.tsv and {code}_questions.tsv
       const tsvFiles = import.meta.glob('/src/data/questions/*_questions*.tsv', {
         query: '?raw',
         import: 'default',
       })
 
-      // Load and parse each TSV file
       for (const [path, importFn] of Object.entries(tsvFiles)) {
         try {
-          // Get the file content
           const tsvContent = await importFn()
 
-          // Parse the filename to get subject code
           const fileInfo = parseFilename(path)
           if (!fileInfo) continue
 
-          const { subjectCode } = fileInfo
+          const sourceCode = fileInfo.subjectCode.toUpperCase()
 
-          // Get the class ID for this subject
-          const classId = subjectToClassId[subjectCode]
-          if (!classId) {
-            console.warn(`Unknown subject code: ${subjectCode} in file ${path}`)
-            continue
-          }
-
-          // Parse the TSV content
           const questions = parseQuestionsTSV(tsvContent)
 
-          // Add unique IDs to questions and add to the appropriate class
+          if (!questionsBySource.value[sourceCode]) {
+            questionsBySource.value[sourceCode] = []
+          }
+
           questions.forEach((question) => {
-            questionsByClass.value[classId].push({
+            questionsBySource.value[sourceCode].push({
               ...question,
               id: nextQuestionId++,
             })
           })
 
-          console.log(`Loaded ${questions.length} questions from ${path} for class ${classId}`)
+          console.log(`Loaded ${questions.length} questions from ${path} (source: ${sourceCode})`)
         } catch (error) {
           console.error(`Error loading TSV file ${path}:`, error)
         }
@@ -85,13 +59,23 @@ export const useQuestionsStore = defineStore('questions', () => {
     }
   }
 
+  /**
+   * Get questions for a class.
+   * Uses the class's `questionSource` if configured, otherwise falls back
+   * to the class's own abbreviation as the source code.
+   * @param {number} classId
+   * @returns {Array}
+   */
   function getQuestionsByClassId(classId) {
-    return questionsByClass.value[classId] || []
+    const classesStore = useClassesStore()
+    const classObj = classesStore.getClassById(classId)
+    const sourceCode = (classObj?.questionSource ?? classObj?.abbreviation)?.toUpperCase()
+    if (!sourceCode) return []
+    return questionsBySource.value[sourceCode] || []
   }
 
   function getRandomizedQuestions(classId) {
     const questions = getQuestionsByClassId(classId)
-    // Fisher-Yates shuffle algorithm
     const shuffled = [...questions]
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
@@ -101,7 +85,7 @@ export const useQuestionsStore = defineStore('questions', () => {
   }
 
   return {
-    questionsByClass,
+    questionsBySource,
     getQuestionsByClassId,
     getRandomizedQuestions,
     loadQuestions,

@@ -33,6 +33,7 @@ export const useClassesStore = defineStore('classes', () => {
       id: 2,
       name: 'Osnove didaktike sporta',
       abbreviation: 'ODS',
+      questionSource: 'UPS',
       type: 'Online predavanje',
       materials: {
         presentations: [
@@ -61,6 +62,7 @@ export const useClassesStore = defineStore('classes', () => {
       id: 3,
       name: 'Osnove pedagogije sporta',
       abbreviation: 'OPS',
+      questionSource: 'UPS',
       type: 'Online predavanje',
       materials: {
         presentations: [
