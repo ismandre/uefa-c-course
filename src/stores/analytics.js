@@ -2,12 +2,13 @@ import { defineStore } from 'pinia'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import { useUserStore } from './user'
+import { shouldTrackAnalytics } from '@/utils/environment'
 
 export const useAnalyticsStore = defineStore('analytics', () => {
   const eventsCollection = collection(db, 'analytics-events')
 
   /**
-   * Track an analytics event - sends to Firestore
+   * Track an analytics event - sends to Firestore in production, logs to console in development
    * @param {string} eventType - Type of event (user_onboarded, material_clicked, etc.)
    * @param {Object} metadata - Additional event metadata
    */
@@ -20,6 +21,15 @@ export const useAnalyticsStore = defineStore('analytics', () => {
       userId: userStore.name || 'anonymous',
       userGroup: userStore.group || null,
       ...metadata,
+    }
+
+    // Only track analytics if not running on localhost
+    if (!shouldTrackAnalytics()) {
+      console.log('[Analytics - Local Only]', eventType, {
+        ...event,
+        timestamp: new Date().toISOString(),
+      })
+      return
     }
 
     try {
@@ -56,7 +66,7 @@ export const useAnalyticsStore = defineStore('analytics', () => {
     trackEvent('question_answered', {
       questionId,
       classId,
-      questionType, // 'visestruki_izbor' or 'otvoreno'
+      questionType, // 'višestruki_izbor' or 'otvoreno'
       isCorrect,
       attemptNumber,
     })
