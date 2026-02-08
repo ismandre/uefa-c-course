@@ -6,6 +6,7 @@ import { useClassesStore } from '@/stores/classes'
 import { useHistoryStore } from '@/stores/history'
 import { useAnalyticsStore } from '@/stores/analytics'
 import QuestionHistory from '@/components/QuestionHistory.vue'
+import ExplanationText from '@/components/ExplanationText.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,7 +19,7 @@ const classId = parseInt(route.params.id)
 const currentClass = computed(() => classesStore.getClassById(classId))
 const questions = ref([])
 const currentQuestionIndex = ref(0)
-const selectedAnswer = ref(null)
+const selectedAnswers = ref(new Set())
 const userAnswer = ref('')
 const showAnswer = ref(false)
 const isCorrect = ref(null)
@@ -33,28 +34,36 @@ const isLastQuestion = computed(() => currentQuestionIndex.value === questions.v
 const isFirstQuestion = computed(() => currentQuestionIndex.value === 0)
 
 // Computed properties to handle CSV question format
-const isMultipleChoice = computed(() => currentQuestion.value?.tip_pitanja === 'visestruki_izbor')
+const isMultipleChoice = computed(() => currentQuestion.value?.tip_pitanja === 'višestruki_izbor')
 const isOpenEnded = computed(() => currentQuestion.value?.tip_pitanja === 'otvoreno')
 
 const questionOptions = computed(() => {
   if (!currentQuestion.value || !isMultipleChoice.value) return []
 
-  const options = []
-  if (currentQuestion.value.odgovor_a) options.push(currentQuestion.value.odgovor_a)
-  if (currentQuestion.value.odgovor_b) options.push(currentQuestion.value.odgovor_b)
-  if (currentQuestion.value.odgovor_c) options.push(currentQuestion.value.odgovor_c)
-  if (currentQuestion.value.odgovor_d) options.push(currentQuestion.value.odgovor_d)
-
-  return options
+  return [
+    currentQuestion.value.odgovor_a,
+    currentQuestion.value.odgovor_b,
+    currentQuestion.value.odgovor_c,
+    currentQuestion.value.odgovor_d,
+    currentQuestion.value.odgovor_e,
+    currentQuestion.value.odgovor_f,
+  ].filter((opt) => opt && opt.trim())
 })
 
-const correctAnswerIndex = computed(() => {
-  if (!currentQuestion.value || !isMultipleChoice.value) return -1
+const correctAnswerIndices = computed(() => {
+  if (!currentQuestion.value || !isMultipleChoice.value) return new Set()
 
-  const letter = currentQuestion.value.tocan_odgovor
-  const letterToIndex = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }
-  return letterToIndex[letter] ?? -1
+  const answer = currentQuestion.value.tocan_odgovor
+  const letterToIndex = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5 }
+
+  // Handle comma-separated answers (e.g., "A,C,D")
+  const letters = answer.split(',').map((l) => l.trim())
+  const indices = letters.map((letter) => letterToIndex[letter]).filter((idx) => idx !== undefined)
+
+  return new Set(indices)
 })
+
+const hasMultipleCorrectAnswers = computed(() => correctAnswerIndices.value.size > 1)
 
 onMounted(async () => {
   // Load questions from CSV files first
@@ -74,13 +83,24 @@ onMounted(async () => {
 
 function selectOption(index) {
   if (isMultipleChoice.value && !showAnswer.value) {
-    selectedAnswer.value = index
+    if (selectedAnswers.value.has(index)) {
+      selectedAnswers.value.delete(index)
+    } else {
+      selectedAnswers.value.add(index)
+    }
+    // Trigger reactivity
+    selectedAnswers.value = new Set(selectedAnswers.value)
   }
 }
 
 function checkAnswer() {
   if (isMultipleChoice.value) {
-    isCorrect.value = selectedAnswer.value === correctAnswerIndex.value
+    // Check if selected answers match correct answers exactly
+    const selected = selectedAnswers.value
+    const correct = correctAnswerIndices.value
+
+    isCorrect.value =
+      selected.size === correct.size && [...selected].every((idx) => correct.has(idx))
 
     // Record the attempt
     historyStore.addAttempt(currentQuestion.value.id, isCorrect.value)
@@ -168,7 +188,7 @@ function previousQuestion() {
 }
 
 function resetQuestion() {
-  selectedAnswer.value = null
+  selectedAnswers.value = new Set()
   userAnswer.value = ''
   showAnswer.value = false
   isCorrect.value = null
@@ -217,24 +237,29 @@ function goBackToHome() {
 
         <!-- Multiple Choice Question -->
         <div v-if="isMultipleChoice" class="options-container">
+          <p v-if="hasMultipleCorrectAnswers" class="multiple-answers-hint">
+            Odaberite sve točne odgovore
+          </p>
           <button
             v-for="(option, index) in questionOptions"
             :key="index"
             @click="selectOption(index)"
             class="option-button"
             :class="{
-              selected: selectedAnswer === index && !showAnswer,
-              correct: showAnswer && index === correctAnswerIndex,
-              incorrect: showAnswer && selectedAnswer === index && index !== correctAnswerIndex,
+              selected: selectedAnswers.has(index) && !showAnswer,
+              correct: showAnswer && correctAnswerIndices.has(index),
+              incorrect:
+                showAnswer && selectedAnswers.has(index) && !correctAnswerIndices.has(index),
             }"
             :disabled="showAnswer"
           >
             <span class="option-label">{{ String.fromCharCode(65 + index) }}.</span>
             <span class="option-text">{{ option }}</span>
+            <span v-if="selectedAnswers.has(index) && !showAnswer" class="checkmark">✓</span>
           </button>
 
           <button
-            v-if="selectedAnswer !== null && !showAnswer"
+            v-if="selectedAnswers.size > 0 && !showAnswer"
             @click="checkAnswer"
             class="check-button"
           >
@@ -257,7 +282,7 @@ function goBackToHome() {
 
           <div v-if="showAnswer" class="correct-answer-section">
             <h3>Točan odgovor:</h3>
-            <p class="correct-answer">{{ currentQuestion.tocan_odgovor }}</p>
+            <ExplanationText :text="currentQuestion.tocan_odgovor" class="correct-answer" />
 
             <div class="self-grade">
               <p>Jeste li odgovorili točno?</p>
@@ -284,7 +309,7 @@ function goBackToHome() {
         <!-- Explanation -->
         <div v-if="showAnswer && currentQuestion.napomena" class="explanation">
           <h3>Objašnjenje:</h3>
-          <p>{{ currentQuestion.napomena }}</p>
+          <ExplanationText :text="currentQuestion.napomena" />
         </div>
 
         <!-- Result Message -->
@@ -311,6 +336,9 @@ function goBackToHome() {
         >
           Početna
         </button>
+        <RouterLink :to="`/questions/${classId}`" class="nav-button browse-link">
+          📋 Sva pitanja
+        </RouterLink>
         <button
           v-if="!isLastQuestion"
           @click="nextQuestion"
@@ -396,12 +424,24 @@ function goBackToHome() {
   font-size: 1.5rem;
   margin-bottom: 2rem;
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .options-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.multiple-answers-hint {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem 0;
+  padding: 0.75rem;
+  background: #eef2ff;
+  border-left: 4px solid #667eea;
+  border-radius: 4px;
 }
 
 .option-button {
@@ -451,6 +491,14 @@ function goBackToHome() {
 .option-text {
   flex: 1;
   color: #2c3e50;
+  white-space: pre-wrap;
+}
+
+.checkmark {
+  color: #667eea;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-left: auto;
 }
 
 .check-button {
@@ -653,5 +701,15 @@ function goBackToHome() {
 .nav-button.finish-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.nav-button.browse-link {
+  text-decoration: none;
+  display: inline-block;
+  background-color: #667eea;
+}
+
+.nav-button.browse-link:hover {
+  background-color: #764ba2;
 }
 </style>
