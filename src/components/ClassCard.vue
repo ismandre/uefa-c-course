@@ -129,10 +129,16 @@ function trackMaterialClick(materialType, materialName) {
     </div>
 
     <div class="card-footer">
-      <RouterLink :to="`/quiz/${classData.id}`" class="quiz-button">
-        <span class="quiz-icon">📝</span>
-        Započni kviz
-      </RouterLink>
+      <div class="footer-buttons">
+        <RouterLink :to="`/questions/${classData.id}`" class="browse-button">
+          <span class="browse-icon">📋</span>
+          Pregledaj pitanja
+        </RouterLink>
+        <RouterLink :to="`/quiz/${classData.id}`" class="quiz-button">
+          <span class="quiz-icon">📝</span>
+          Započni kviz
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
@@ -339,17 +345,50 @@ function trackMaterialClick(materialType, materialName) {
   border-top: 2px solid #f0f0f0;
 }
 
+.footer-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.browse-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  padding: 0.875rem 1rem;
+  background: white;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.browse-button:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.browse-icon {
+  font-size: 1.1rem;
+}
+
 .quiz-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
-  padding: 0.875rem 1.5rem;
+  flex: 1;
+  padding: 0.875rem 1rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   border-radius: 8px;
   transition: all 0.3s;
@@ -362,6 +401,6 @@ function trackMaterialClick(materialType, materialName) {
 }
 
 .quiz-icon {
-  font-size: 1.125rem;
+  font-size: 1.1rem;
 }
 </style>
