@@ -1,0 +1,14 @@
+Predmet	Pitanje	Tip_pitanja	Odgovor_A	Odgovor_B	Odgovor_C	Odgovor_D	Odgovor_E	Odgovor_F	Tocan_odgovor	Napomena	Pregledano	Provjereno
+ZOP	Uvjeti potrebni za gorenje su:	višestruki_izbor	kisik i goriva tvar	goriva tvar i toplina	goriva tvar, kisik i toplina				C		TRUE	TRUE
+ZOP	Požari klase A su požari	višestruki_izbor	zapaljivih tekućina	zapaljivih krutih tvari	zapaljivih plinova				B		TRUE	TRUE
+ZOP	Kada požar gasimo ohlađivanjem gorive tvari onda snižavamo	višestruki_izbor	koncentraciju kisika	temperaturu gorive tvari	količinu gorive tvari				B		TRUE	TRUE
+ZOP	Gorenje prestaje kada je koncentracija kisika u zraku manja od: 	višestruki_izbor	21%	15%	18%				B		TRUE	TRUE
+ZOP	Kada požar gasimo vodom, najprije je potrebno	višestruki_izbor	provjeriti zalihe vode	oprezno prilaziti plamenu	isključiti el. struju				C		TRUE	TRUE
+ZOP	Radnik pristupa gašenju početnog požara	višestruki_izbor	kada u blizini nema vatrogasne jedinice	samo po nalogu rukovoditelja	kada to može učiniti bez opasnosti za sebe i ostale				C		TRUE	TRUE
+ZOP	Aparat "S" za početno gašenje požara aktiviramo	višestruki_izbor	pritiskom na ručicu ili čep	pritiskom na ručicu mlaznice	izvlačenjem osigurača, pritiskom na ručicu ili čep i pritiskom na ručicu mlaznice				C		TRUE	TRUE
+ZOP	Požari klase B su požari	višestruki_izbor	zapaljivih tekućina	zapaljivih krutih tvari	zapaljivih plinova				A		TRUE	TRUE
+ZOP	Požare krutih tvari klase A, najefikasnije gasimo:	višestruki_izbor	prahom	vodom	ugljičnim dioksidom				B		TRUE	TRUE
+ZOP	Požare zapaljivih tekućina najefikasnije gasimo s:	višestruki_izbor	vodom	pjenom i prahom	odstranjivanjem gorive tvari				B		TRUE	TRUE
+ZOP	Najčešći uzroci nastanka požara su:	višestruki_izbor	mehanički, kemijski, el. energija, toplinski	prisutnost gorivih tvari	nepažnja				C		TRUE	TRUE
+ZOP	Metode gašenja požara su:	višestruki_izbor	ohlađivanje, ugašivanje, antikatalitički, odstranjivanje gorive tvari	snižavanje temperature	odstranjivanjem gorive tvari				A		TRUE	TRUE
+ZOP	Evakuacije je:	višestruki_izbor	brzo napuštanje građevine	brzo napuštanje ugroženog mjesta	pravovremeno, ogranizirano, brzo i sigurno napuštanje ugroženog objekta				C		TRUE	TRUE
